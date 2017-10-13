@@ -15,8 +15,7 @@
 
 import {
   AnnotationBorderStyleType, AnnotationFieldFlag, AnnotationFlag,
-  AnnotationType, isArray, isInt, OPS, stringToBytes, stringToPDFString, Util,
-  warn
+  AnnotationType, OPS, stringToBytes, stringToPDFString, Util, warn
 } from '../shared/util';
 import { Catalog, FileSpec, ObjectLoader } from './obj';
 import { Dict, isDict, isName, isRef, isStream } from './primitives';
@@ -82,6 +81,18 @@ class AnnotationFactory {
       case 'Line':
         return new LineAnnotation(parameters);
 
+      case 'Square':
+        return new SquareAnnotation(parameters);
+
+      case 'Circle':
+        return new CircleAnnotation(parameters);
+
+      case 'PolyLine':
+        return new PolylineAnnotation(parameters);
+
+      case 'Polygon':
+        return new PolygonAnnotation(parameters);
+
       case 'Highlight':
         return new HighlightAnnotation(parameters);
 
@@ -93,6 +104,9 @@ class AnnotationFactory {
 
       case 'StrikeOut':
         return new StrikeOutAnnotation(parameters);
+
+      case 'Stamp':
+        return new StampAnnotation(parameters);
 
       case 'FileAttachment':
         return new FileAttachmentAnnotation(parameters);
@@ -212,7 +226,7 @@ class Annotation {
    * @see {@link shared/util.js}
    */
   setFlags(flags) {
-    this.flags = (isInt(flags) && flags > 0) ? flags : 0;
+    this.flags = (Number.isInteger(flags) && flags > 0) ? flags : 0;
   }
 
   /**
@@ -237,7 +251,7 @@ class Annotation {
    * @param {Array} rectangle - The rectangle array with exactly four entries
    */
   setRectangle(rectangle) {
-    if (isArray(rectangle) && rectangle.length === 4) {
+    if (Array.isArray(rectangle) && rectangle.length === 4) {
       this.rectangle = Util.normalizeRect(rectangle);
     } else {
       this.rectangle = [0, 0, 0, 0];
@@ -255,7 +269,7 @@ class Annotation {
    */
   setColor(color) {
     let rgbColor = new Uint8Array(3); // Black in RGB color space (default)
-    if (!isArray(color)) {
+    if (!Array.isArray(color)) {
       this.color = rgbColor;
       return;
     }
@@ -309,7 +323,7 @@ class Annotation {
       }
     } else if (borderStyle.has('Border')) {
       let array = borderStyle.getArray('Border');
-      if (isArray(array) && array.length >= 3) {
+      if (Array.isArray(array) && array.length >= 3) {
         this.borderStyle.setHorizontalCornerRadius(array[0]);
         this.borderStyle.setVerticalCornerRadius(array[1]);
         this.borderStyle.setWidth(array[2]);
@@ -451,7 +465,7 @@ class AnnotationBorderStyle {
    * @param {integer} width - The width
    */
   setWidth(width) {
-    if (width === (width | 0)) {
+    if (Number.isInteger(width)) {
       this.width = width;
     }
   }
@@ -505,7 +519,7 @@ class AnnotationBorderStyle {
     // We validate the dash array, but we do not use it because CSS does not
     // allow us to change spacing of dashes. For more information, visit
     // http://www.w3.org/TR/css3-background/#the-border-style.
-    if (isArray(dashArray) && dashArray.length > 0) {
+    if (Array.isArray(dashArray) && dashArray.length > 0) {
       // According to the PDF specification: the elements in `dashArray`
       // shall be numbers that are nonnegative and not all equal to zero.
       let isValid = true;
@@ -538,7 +552,7 @@ class AnnotationBorderStyle {
    * @param {integer} radius - The horizontal corner radius
    */
   setHorizontalCornerRadius(radius) {
-    if (radius === (radius | 0)) {
+    if (Number.isInteger(radius)) {
       this.horizontalCornerRadius = radius;
     }
   }
@@ -551,7 +565,7 @@ class AnnotationBorderStyle {
    * @param {integer} radius - The vertical corner radius
    */
   setVerticalCornerRadius(radius) {
-    if (radius === (radius | 0)) {
+    if (Number.isInteger(radius)) {
       this.verticalCornerRadius = radius;
     }
   }
@@ -575,7 +589,7 @@ class WidgetAnnotation extends Annotation {
     this.fieldResources = Util.getInheritableProperty(dict, 'DR') || Dict.empty;
 
     data.fieldFlags = Util.getInheritableProperty(dict, 'Ff');
-    if (!isInt(data.fieldFlags) || data.fieldFlags < 0) {
+    if (!Number.isInteger(data.fieldFlags) || data.fieldFlags < 0) {
       data.fieldFlags = 0;
     }
 
@@ -666,14 +680,14 @@ class TextWidgetAnnotation extends WidgetAnnotation {
 
     // Determine the alignment of text in the field.
     let alignment = Util.getInheritableProperty(params.dict, 'Q');
-    if (!isInt(alignment) || alignment < 0 || alignment > 2) {
+    if (!Number.isInteger(alignment) || alignment < 0 || alignment > 2) {
       alignment = null;
     }
     this.data.textAlignment = alignment;
 
     // Determine the maximum length of text in the field.
     let maximumLength = Util.getInheritableProperty(params.dict, 'MaxLen');
-    if (!isInt(maximumLength) || maximumLength < 0) {
+    if (!Number.isInteger(maximumLength) || maximumLength < 0) {
       maximumLength = null;
     }
     this.data.maxLen = maximumLength;
@@ -776,11 +790,11 @@ class ChoiceWidgetAnnotation extends WidgetAnnotation {
     this.data.options = [];
 
     let options = Util.getInheritableProperty(params.dict, 'Opt');
-    if (isArray(options)) {
+    if (Array.isArray(options)) {
       let xref = params.xref;
       for (let i = 0, ii = options.length; i < ii; i++) {
         let option = xref.fetchIfRef(options[i]);
-        let isOptionArray = isArray(option);
+        let isOptionArray = Array.isArray(option);
 
         this.data.options[i] = {
           exportValue: isOptionArray ? xref.fetchIfRef(option[0]) : option,
@@ -792,7 +806,7 @@ class ChoiceWidgetAnnotation extends WidgetAnnotation {
     // Determine the field value. In this case, it may be a string or an
     // array of strings. For convenience in the display layer, convert the
     // string to an array of one string as well.
-    if (!isArray(this.data.fieldValue)) {
+    if (!Array.isArray(this.data.fieldValue)) {
       this.data.fieldValue = [this.data.fieldValue];
     }
 
@@ -887,6 +901,57 @@ class LineAnnotation extends Annotation {
   }
 }
 
+class SquareAnnotation extends Annotation {
+  constructor(parameters) {
+    super(parameters);
+
+    this.data.annotationType = AnnotationType.SQUARE;
+    this._preparePopup(parameters.dict);
+  }
+}
+
+class CircleAnnotation extends Annotation {
+  constructor(parameters) {
+    super(parameters);
+
+    this.data.annotationType = AnnotationType.CIRCLE;
+    this._preparePopup(parameters.dict);
+  }
+}
+
+class PolylineAnnotation extends Annotation {
+  constructor(parameters) {
+    super(parameters);
+
+    this.data.annotationType = AnnotationType.POLYLINE;
+
+    // The vertices array is an array of numbers representing the alternating
+    // horizontal and vertical coordinates, respectively, of each vertex.
+    // Convert this to an array of objects with x and y coordinates.
+    let dict = parameters.dict;
+    let rawVertices = dict.getArray('Vertices');
+
+    this.data.vertices = [];
+    for (let i = 0, ii = rawVertices.length; i < ii; i += 2) {
+      this.data.vertices.push({
+        x: rawVertices[i],
+        y: rawVertices[i + 1],
+      });
+    }
+
+    this._preparePopup(dict);
+  }
+}
+
+class PolygonAnnotation extends PolylineAnnotation {
+  constructor(parameters) {
+    // Polygons are specific forms of polylines, so reuse their logic.
+    super(parameters);
+
+    this.data.annotationType = AnnotationType.POLYGON;
+  }
+}
+
 class HighlightAnnotation extends Annotation {
   constructor(parameters) {
     super(parameters);
@@ -919,6 +984,15 @@ class StrikeOutAnnotation extends Annotation {
     super(parameters);
 
     this.data.annotationType = AnnotationType.STRIKEOUT;
+    this._preparePopup(parameters.dict);
+  }
+}
+
+class StampAnnotation extends Annotation {
+  constructor(parameters) {
+    super(parameters);
+
+    this.data.annotationType = AnnotationType.STAMP;
     this._preparePopup(parameters.dict);
   }
 }

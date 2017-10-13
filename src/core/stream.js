@@ -14,7 +14,7 @@
  */
 
 import {
-  createObjectURL, FormatError, info, isArray, isInt, isSpace, shadow, Util
+  createObjectURL, FormatError, info, isSpace, shadow, Util
 } from '../shared/util';
 import { Dict, isDict, isStream } from './primitives';
 import { Jbig2Image } from './jbig2';
@@ -735,6 +735,19 @@ var PredictorStream = (function PredictorStreamClosure() {
         buffer[pos] = buffer[pos - colors] + rawBytes[i];
         pos++;
       }
+    } else if (bits === 16) {
+      var bytesPerPixel = colors * 2;
+      for (i = 0; i < bytesPerPixel; ++i) {
+        buffer[pos++] = rawBytes[i];
+      }
+      for (; i < rowBytes; i += 2) {
+        var sum = ((rawBytes[i] & 0xFF) << 8) +
+                  (rawBytes[i + 1] & 0xFF) +
+                  ((buffer[pos - bytesPerPixel] & 0xFF) << 8) +
+                  (buffer[pos - bytesPerPixel + 1] & 0xFF);
+        buffer[pos++] = ((sum >> 8) & 0xFF);
+        buffer[pos++] = (sum & 0xFF);
+      }
     } else {
       var compArray = new Uint8Array(colors + 1);
       var bitMask = (1 << bits) - 1;
@@ -907,7 +920,7 @@ var JpegStream = (function JpegStreamClosure() {
 
     // Checking if values need to be transformed before conversion.
     var decodeArr = this.dict.getArray('Decode', 'D');
-    if (this.forceRGB && isArray(decodeArr)) {
+    if (this.forceRGB && Array.isArray(decodeArr)) {
       var bitsPerComponent = this.dict.get('BitsPerComponent') || 8;
       var decodeArrLength = decodeArr.length;
       var transform = new Int32Array(decodeArrLength);
@@ -927,7 +940,7 @@ var JpegStream = (function JpegStreamClosure() {
     // Fetching the 'ColorTransform' entry, if it exists.
     if (isDict(this.params)) {
       var colorTransform = this.params.get('ColorTransform');
-      if (isInt(colorTransform)) {
+      if (Number.isInteger(colorTransform)) {
         jpegImage.colorTransform = colorTransform;
       }
     }
@@ -1748,8 +1761,9 @@ var CCITTFaxStream = (function CCITTFaxStreamClosure() {
     this.str = str;
     this.dict = str.dict;
 
-    params = params || Dict.empty;
-
+    if (!isDict(params)) {
+      params = Dict.empty;
+    }
     this.encoding = params.get('K') || 0;
     this.eoline = params.get('EndOfLine') || false;
     this.byteAlign = params.get('EncodedByteAlign') || false;
@@ -1773,6 +1787,7 @@ var CCITTFaxStream = (function CCITTFaxStreamClosure() {
     this.inputBits = 0;
     this.inputBuf = 0;
     this.outputBits = 0;
+    this.rowsDone = false;
 
     var code1;
     while ((code1 = this.lookBits(12)) === 0) {
@@ -1858,6 +1873,9 @@ var CCITTFaxStream = (function CCITTFaxStreamClosure() {
     var refPos, blackPixels, bits, i;
 
     if (this.outputBits === 0) {
+      if (this.rowsDone) {
+        this.eof = true;
+      }
       if (this.eof) {
         return null;
       }
@@ -2038,7 +2056,7 @@ var CCITTFaxStream = (function CCITTFaxStreamClosure() {
       }
 
       if (!this.eoblock && this.row === this.rows - 1) {
-        this.eof = true;
+        this.rowsDone = true;
       } else {
         code1 = this.lookBits(12);
         if (this.eoline) {
@@ -2060,7 +2078,7 @@ var CCITTFaxStream = (function CCITTFaxStreamClosure() {
         }
       }
 
-      if (!this.eof && this.encoding > 0) {
+      if (!this.eof && this.encoding > 0 && !this.rowsDone) {
         this.nextLine2D = !this.lookBits(1);
         this.eatBits(1);
       }

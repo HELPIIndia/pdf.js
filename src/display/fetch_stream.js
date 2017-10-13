@@ -26,7 +26,7 @@ function createFetchOptions(headers, withCredentials) {
     method: 'GET',
     headers,
     mode: 'cors',
-    credentials: withCredentials ? 'include' : 'omit',
+    credentials: withCredentials ? 'include' : 'same-origin',
     redirect: 'follow',
   };
 }
@@ -94,7 +94,7 @@ class PDFFetchStreamReader {
     let url = this._stream.source.url;
     fetch(url, createFetchOptions(this._headers, this._withCredentials)).
         then((response) => {
-      if (!validateResponseStatus(response.status, this._stream.isHttp)) {
+      if (!validateResponseStatus(response.status)) {
         throw createResponseStatusError(response.status, url);
       }
       this._reader = response.body.getReader();
@@ -188,7 +188,7 @@ class PDFFetchStreamRangeReader {
     let url = this._stream.source.url;
     fetch(url, createFetchOptions(this._headers, this._withCredentials)).
         then((response) => {
-      if (!validateResponseStatus(response.status, this._stream.isHttp)) {
+      if (!validateResponseStatus(response.status)) {
         throw createResponseStatusError(response.status, url);
       }
       this._readCapability.resolve();

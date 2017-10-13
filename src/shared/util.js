@@ -800,10 +800,6 @@ var Util = (function UtilClosure() {
     return result;
   };
 
-  Util.sign = function Util_sign(num) {
-    return num < 0 ? -1 : 1;
-  };
-
   var ROMAN_NUMBER_MAP = [
     '', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM',
     '', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC',
@@ -817,7 +813,7 @@ var Util = (function UtilClosure() {
    * @return {string} The resulting Roman number.
    */
   Util.toRoman = function Util_toRoman(number, lowerCase) {
-    assert(isInt(number) && number > 0,
+    assert(Number.isInteger(number) && number > 0,
            'The number should be a positive integer.');
     var pos, romanBuf = [];
     // Thousands
@@ -1075,20 +1071,12 @@ function isBool(v) {
   return typeof v === 'boolean';
 }
 
-function isInt(v) {
-  return typeof v === 'number' && ((v | 0) === v);
-}
-
 function isNum(v) {
   return typeof v === 'number';
 }
 
 function isString(v) {
   return typeof v === 'string';
-}
-
-function isArray(v) {
-  return v instanceof Array;
 }
 
 function isArrayBuffer(v) {
@@ -1699,11 +1687,9 @@ export {
   getLookupTableFactory,
   getVerbosityLevel,
   info,
-  isArray,
   isArrayBuffer,
   isBool,
   isEmptyObj,
-  isInt,
   isNum,
   isString,
   isSpace,

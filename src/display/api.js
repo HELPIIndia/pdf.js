@@ -15,11 +15,11 @@
 /* globals requirejs, __non_webpack_require__ */
 
 import {
-  assert, createPromiseCapability, deprecated, getVerbosityLevel,
-  info, InvalidPDFException, isArrayBuffer, isInt, isSameOrigin,
-  loadJpegStream, MessageHandler, MissingPDFException, NativeImageDecoding,
-  PageViewport, PasswordException, StatTimer, stringToBytes,
-  UnexpectedResponseException, UnknownErrorException, Util, warn
+  assert, createPromiseCapability, deprecated, getVerbosityLevel, info,
+  InvalidPDFException, isArrayBuffer, isSameOrigin, loadJpegStream,
+  MessageHandler, MissingPDFException, NativeImageDecoding, PageViewport,
+  PasswordException, StatTimer, stringToBytes, UnexpectedResponseException,
+  UnknownErrorException, Util, warn
 } from '../shared/util';
 import {
   DOMCanvasFactory, DOMCMapReaderFactory, getDefaultSetting,
@@ -331,6 +331,8 @@ function _fetchDocument(worker, source, pdfDataRangeTransport, docId) {
   if (worker.destroyed) {
     return Promise.reject(new Error('Worker was destroyed'));
   }
+  let apiVersion =
+    typeof PDFJSDev !== 'undefined' ? PDFJSDev.eval('BUNDLE_VERSION') : null;
 
   source.disableAutoFetch = getDefaultSetting('disableAutoFetch');
   source.disableStream = getDefaultSetting('disableStream');
@@ -341,6 +343,7 @@ function _fetchDocument(worker, source, pdfDataRangeTransport, docId) {
   }
   return worker.messageHandler.sendWithPromise('GetDocRequest', {
     docId,
+    apiVersion,
     source: {
       data: source.data,
       url: source.url,
@@ -357,6 +360,7 @@ function _fetchDocument(worker, source, pdfDataRangeTransport, docId) {
     docBaseUrl: source.docBaseUrl,
     nativeImageDecoderSupport: source.nativeImageDecoderSupport,
     ignoreErrors: source.ignoreErrors,
+    isEvalSupported: getDefaultSetting('isEvalSupported'),
   }).then(function (workerId) {
     if (worker.destroyed) {
       throw new Error('Worker was destroyed');
@@ -1814,7 +1818,7 @@ var WorkerTransport = (function WorkerTransportClosure() {
               };
             }
             var font = new FontFaceObject(exportedData, {
-              isEvalSuported: getDefaultSetting('isEvalSupported'),
+              isEvalSupported: getDefaultSetting('isEvalSupported'),
               disableFontFace: getDefaultSetting('disableFontFace'),
               fontRegistry,
             });
@@ -1986,7 +1990,8 @@ var WorkerTransport = (function WorkerTransportClosure() {
     },
 
     getPage: function WorkerTransport_getPage(pageNumber, capability) {
-      if (!isInt(pageNumber) || pageNumber <= 0 || pageNumber > this.numPages) {
+      if (!Number.isInteger(pageNumber) ||
+          pageNumber <= 0 || pageNumber > this.numPages) {
         return Promise.reject(new Error('Invalid page request'));
       }
 

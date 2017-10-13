@@ -623,6 +623,15 @@
        "annotations": true,
        "about": "Annotation with Rect array containing indirect objects."
     },
+    {  "id": "file_url_link",
+       "file": "pdfs/file_url_link.pdf",
+       "md5": "b0253c96c38d43bc49259bbf36db938a",
+       "link": false,
+       "rounds": 1,
+       "type": "eq",
+       "annotations": true,
+       "about": "Annotation with (unsupported) file:// URL."
+    },
     {  "id": "issue4934",
        "file": "pdfs/issue4934.pdf",
        "md5": "6099da44f677702ae65a648b51a2226d",
@@ -675,6 +684,13 @@
        "link": false,
        "type": "load"
     },
+    {  "id": "issue7507",
+       "file": "pdfs/issue7507.pdf",
+       "md5": "f7aeaafe0c89b94436e94eaa63307303",
+       "rounds": 1,
+       "link": false,
+       "type": "eq"
+    },
     {  "id": "issue5501",
        "file": "pdfs/issue5501.pdf",
        "md5": "55a60699728fc92f491a2d7d490474e4",
@@ -689,6 +705,22 @@
        "link": false,
        "type": "eq"
     },
+    {  "id": "issue8895",
+       "file": "pdfs/issue8895.pdf",
+       "md5": "098658008fc2bf7d433fd0d6d468a9e1",
+       "rounds": 1,
+       "link": true,
+       "lastPage": 1,
+       "type": "eq"
+    },
+    {  "id": "issue6289",
+       "file": "pdfs/issue6289.pdf",
+       "md5": "0869f3d147c734ec484ffd492104095d",
+       "rounds": 1,
+       "link": true,
+       "lastPage": 1,
+       "type": "eq"
+    },
     {  "id": "issue5509",
        "file": "pdfs/issue5509.pdf",
        "md5": "1975ef8db7355b1d691bc79d0749574b",
@@ -697,6 +729,14 @@
        "firstPage": 1,
        "lastPage": 1,
        "type": "load"
+    },
+    {  "id": "pr8808",
+       "file": "pdfs/pr8808.pdf",
+       "md5": "bdac6051a98fd8dcfc5344b05fed06f4",
+       "rounds": 1,
+       "link": true,
+       "lastPage": 1,
+       "type": "eq"
     },
     {  "id": "issue5599",
        "file": "pdfs/issue5599.pdf",
@@ -785,6 +825,12 @@
        "type": "eq",
        "forms": true
     },
+    {  "id": "jbig2_symbol_offset",
+       "file": "pdfs/jbig2_symbol_offset.pdf",
+       "md5": "6b22a0f838008fa4d8cb5b40ba095c48",
+       "rounds": 1,
+       "type": "eq"
+    },
     {  "id": "bug1046314",
        "file": "pdfs/bug1046314.pdf",
        "md5": "fc658439f44cd2dd27c8bee7e7a8344e",
@@ -830,6 +876,13 @@
     {  "id": "bug1252420",
        "file": "pdfs/bug1252420.pdf",
        "md5": "f21c911b9b655972b06ef782a1fa6a17",
+       "rounds": 1,
+       "link": false,
+       "type": "eq"
+    },
+    {  "id": "bug1392647",
+       "file": "pdfs/bug1392647.pdf",
+       "md5": "9770ea476630ca7d560b7c39430f8850",
        "rounds": 1,
        "link": false,
        "type": "eq"
@@ -1586,6 +1639,22 @@
        "link": true,
        "lastPage": 1,
        "type": "load"
+    },
+    {  "id": "issue8702-eq",
+       "file": "pdfs/issue8702.pdf",
+       "md5": "59d501ed1518d78ef6ee442cf824b0f6",
+       "rounds": 1,
+       "link": false,
+       "lastPage": 1,
+       "type": "eq"
+    },
+    {  "id": "issue8702-text",
+       "file": "pdfs/issue8702.pdf",
+       "md5": "59d501ed1518d78ef6ee442cf824b0f6",
+       "rounds": 1,
+       "link": false,
+       "lastPage": 1,
+       "type": "text"
     },
     {  "id": "pr4897",
        "file": "pdfs/pr4897.pdf",
@@ -3551,6 +3620,20 @@
        "type": "eq",
        "annotations": true
     },
+    {  "id": "annotation-square-circle",
+       "file": "pdfs/annotation-square-circle.pdf",
+       "md5": "cfd3c302f68d61e1d55ed9c7896046c3",
+       "rounds": 1,
+       "type": "eq",
+       "annotations": true
+    },
+    {  "id": "annotation-stamp",
+       "file": "pdfs/annotation-stamp.pdf",
+       "md5": "0a04d7ce1ad103cb3c033d26855d6ec7",
+       "rounds": 1,
+       "type": "eq",
+       "annotations": true
+    },
     {  "id": "annotation-fileattachment",
        "file": "pdfs/annotation-fileattachment.pdf",
        "md5": "d20ecee4b53c81b2dd44c8715a1b4a83",
@@ -3600,6 +3683,13 @@
        "type": "eq",
        "forms": true
     },
+    {  "id": "annotation-polyline-polygon",
+       "file": "pdfs/annotation-polyline-polygon.pdf",
+       "md5": "e68611602f58c8ca70cc40575ba3b04e",
+       "rounds": 1,
+       "type": "eq",
+       "annotations": true
+    },
     {  "id": "issue6108",
        "file": "pdfs/issue6108.pdf",
        "md5": "8961cb55149495989a80bf0487e0f076",
@@ -3645,6 +3735,12 @@
        "md5": "36ea2e28cd77e9e70731f574ab27cbe0",
        "rounds": 1,
        "link": true,
+       "type": "eq"
+    },
+    {  "id": "ccitt_EndOfBlock_false",
+       "file": "pdfs/ccitt_EndOfBlock_false.pdf",
+       "md5": "ce718efe601cd7491dd00651b4790329",
+       "rounds": 1,
        "type": "eq"
     }
 ]
