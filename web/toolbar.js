@@ -140,17 +140,17 @@ class Toolbar {
       eventBus.dispatch('presentationmode');
     });
 
-    items.openFile.addEventListener('click', function() {
-      eventBus.dispatch('openfile');
-    });
+    //items.openFile.addEventListener('click', function() {
+    //  eventBus.dispatch('openfile');
+    //});
 
     items.print.addEventListener('click', function() {
       eventBus.dispatch('print');
     });
 
-    items.download.addEventListener('click', function() {
-      eventBus.dispatch('download');
-    });
+    //items.download.addEventListener('click', function() {
+    //  eventBus.dispatch('download');
+    //});
 
     // Suppress context menus for some controls.
     items.scaleSelect.oncontextmenu = noContextMenuHandler;
